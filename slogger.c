@@ -1,5 +1,7 @@
 
 #include "slogger.h"
+#include "common.h"
+
 #include <stdarg.h>
 #include <string.h>
 #include <stdlib.h>
@@ -101,7 +103,7 @@ QueueData* dequeue() {
 
 //while (atomic_load_explicit(&flag, SOME_MEMORY_ORDER)) ...
 
-void* logging_th(void* arg) {
+void* logging_thread(void* arg) {
 
         // open file
     FILE* file = fopen("/tmp/test.log", "w+");
@@ -157,7 +159,7 @@ void* logging_th(void* arg) {
     
     fclose(file);
      
-    printf("End of logging_th \n");
+    printf("End of logging_thread \n");
     
     fflush(stdout);
     
@@ -276,7 +278,7 @@ void log_message(int log_lvl, FILE *fp, const char *tag, const char *fmt, ...)
 void slog_start(Slogger* th){ 
     
    // pthread_t threads;
-    pthread_create(&th->threads, NULL, logging_th, NULL);
+    pthread_create(&th->threads, NULL, logging_thread, NULL);
 
     // initialize queue
     queue.capacity = CAPACITY;
@@ -288,8 +290,6 @@ void slog_start(Slogger* th){
 
 void slog_stop(Slogger* th){ 
     
-    
-    
      
     printf("slog_stop\n" );
     
@@ -297,7 +297,13 @@ void slog_stop(Slogger* th){
     
     atomic_store_explicit(&keeprunning,0 , memory_order_relaxed);
 
+    pthread_mutex_lock(&queue.mutex);
+    
     pthread_cond_signal(&queue.cond);
+    pthread_cond_destroy(&queue.cond);
+    
+    pthread_mutex_unlock(&queue.mutex);
+
     
     fflush(stdout);
     

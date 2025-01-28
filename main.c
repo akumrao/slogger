@@ -11,6 +11,8 @@
 
 
 #include "slogger.h"
+#include "common.h"
+#include "condwait.h"
 
 #define TAG "UFS : Frequency"
 
@@ -35,17 +37,26 @@
 //}
 
 //
+
+
+ Condwait condwait = (Condwait){  condwait_wait, condwait_signal, condwait_stop }; 
+ 
+
 void intHandler(int sig)
 { // can be called asynchronously
  
     
-//    printf("intHandler\n" );
+    condwait.signal(&condwait);
+    
+    printf("intHandler\n" );
 //    
 //    queue.shutdown = 1;
 //    
 //    cancel_my_thread();
 //
 //    pthread_cond_signal(&queue.cond);
+    
+    
     
     fflush(stdout);
   
@@ -118,6 +129,8 @@ void writeT( int threadNO )
 
 int readM() 
 {
+   
+    
     struct manifiest st;
     FILE *fptr;
     fptr = fopen("/tmp/manifest.txt", "r");
@@ -291,10 +304,9 @@ int main()
 
 int main(int argc, char**argv) 
 {
-//    Node  ll = (Node){ 42, NULL, str }; 
-//    ll.str_func(&ll); 
-//    printf("Hello World"); 
-//  
+
+
+    
     
     signal(SIGINT, intHandler); 
     
@@ -313,12 +325,19 @@ int main(int argc, char**argv)
     log_message(LOG_DEBUG, NULL, TAG, "Gear and lanes are configured and validated");
     
  
-    sleep(20);
+ 
+    
+    condwait.wait(&condwait, 18, 1);
+    
+     printf("\nmain exit\n");
+    
     
     log_message(LOG_DEBUG, NULL, TAG, "UFS001 ended");
     
     
     slogger.stop(&slogger);
+    
+    condwait.stop(&condwait);
     
     
     return 0;

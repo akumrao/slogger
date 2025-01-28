@@ -20,11 +20,6 @@
 extern "C" {
 #endif
 
-#define LOG_ERR     0   /* error conditions */
-#define LOG_WARN    1   /* warning conditions */
-#define LOG_INFO    2   /* informational */
-#define LOG_DEBUG   3   /* debug-level messages */
-
 #define BUFFER_SIZE 1024    
     
 typedef struct _slogger { 
