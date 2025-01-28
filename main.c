@@ -314,7 +314,7 @@ int main(int argc, char**argv)
         
     
 
-    Slogger slogger = (Slogger){  NULL, slog_start, slog_stop, " " }; 
+    Slogger slogger = (Slogger){  NULL, slog_start, slog_stop, "/tmp/test.log " }; 
     
     slogger.start(&slogger); 
     
@@ -327,9 +327,9 @@ int main(int argc, char**argv)
  
  
     
-    condwait.wait(&condwait, 18, 1);
+    condwait.wait(&condwait, 5555, 1);
     
-     printf("\nmain exit\n");
+    printf("\nmain exit\n");
     
     
     log_message(LOG_DEBUG, NULL, TAG, "UFS001 ended");

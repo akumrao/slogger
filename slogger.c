@@ -105,8 +105,14 @@ QueueData* dequeue() {
 
 void* logging_thread(void* arg) {
 
+    
+    const char *logPath = (const char *) arg;
+    
+    fprintf(" \n test %s \n", logPath);
+    
+    
         // open file
-    FILE* file = fopen("/tmp/test.log", "w+");
+    FILE* file = fopen("/tmp/manifest.txt", "w+");
     if (file == NULL) {
         fprintf(stderr, "Failed to open file\n");
         return NULL;
@@ -121,12 +127,17 @@ void* logging_thread(void* arg) {
         if(!qdata)
             break;
         
-        printf("qdata: %s, size: %d", qdata->str,  qdata->size);
+        
+        fwrite(qdata->str, 1, qdata->size, file);
+         
+        fflush(file); 
+                    
+        printf("qdata: %s, size: %d \n", qdata->str,  qdata->size);
         
         free(qdata->str);
         free(qdata);
         
-        fflush(stdout);
+       // fflush(stdout);
 
 //        // seek to start of chunk
 //        if (fseek(file, data->start, SEEK_SET) != 0) {
@@ -278,7 +289,7 @@ void log_message(int log_lvl, FILE *fp, const char *tag, const char *fmt, ...)
 void slog_start(Slogger* th){ 
     
    // pthread_t threads;
-    pthread_create(&th->threads, NULL, logging_thread, NULL);
+    pthread_create(&th->threads, NULL, logging_thread, th->logPath);
 
     // initialize queue
     queue.capacity = CAPACITY;

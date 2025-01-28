@@ -21,13 +21,16 @@ extern "C" {
 #endif
 
 #define BUFFER_SIZE 1024    
+#define MAX_PATH_LEN 256
     
 typedef struct _slogger { 
    
   pthread_t *threads; 
   void (*start)( struct _slogger*); 
   void (*stop)( struct _slogger*); 
-     
+  
+  char logPath[MAX_PATH_LEN];
+  
 } Slogger ; 
 
     
