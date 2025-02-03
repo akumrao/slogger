@@ -120,7 +120,7 @@ void thload_run(ThLoader* th){
     while (atomic_load_explicit(&th->keeprunning, memory_order_relaxed))
     {
         th_log_message(LOG_DEBUG, TAG, "UFS001 load %d , tid = %ld ", ncount++,  (long) pthread_self () );
-        usleep(100000);
+        usleep(10000);
     }
    
 } 

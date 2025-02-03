@@ -32,7 +32,7 @@ typedef struct _threadload {
   char logPath[MAX_PATH_LENGTH];
   atomic_bool keeprunning;  
   
-  pthread_t *threads; 
+  pthread_t threads; 
   
 } ThLoader ; 
 

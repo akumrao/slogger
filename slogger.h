@@ -25,11 +25,12 @@ extern "C" {
     
 typedef struct _slogger { 
    
-  pthread_t *threads; 
   void (*start)( struct _slogger*); 
   void (*stop)( struct _slogger*); 
   
   char logPath[MAX_PATH_LEN];
+  
+  pthread_t *threads; 
   
 } Slogger ; 
 
