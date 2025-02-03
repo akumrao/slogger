@@ -20,8 +20,8 @@
 extern "C" {
 #endif
 
-#define BUFFER_SIZE 1024    
-#define MAX_PATH_LEN 256
+#define LOG_BUFFER_SIZE 1024    
+#define MAX_PATH_LEN 255
     
 typedef struct _slogger { 
    

@@ -108,7 +108,7 @@ void* logging_thread(void* arg) {
     
     const char *logPath = (const char *) arg;
     
-    fprintf(" \n test %s \n", logPath);
+    printf(" \n test %s \n", logPath);
     
     
         // open file
@@ -228,7 +228,7 @@ void log_message(int log_lvl, FILE *fp, const char *tag, const char *fmt, ...)
 {
   //if (log_lvl <= console_loglevel)
   {
-    char timestamp[BUFFER_SIZE];
+    char timestamp[LOG_BUFFER_SIZE];
     get_timestamp(timestamp, sizeof(timestamp));
 
     va_list args;
