@@ -85,7 +85,7 @@ QueueData* dequeue() {
     while (queue.size == 0 && !queue.shutdown  ) {
         pthread_cond_wait(&queue.cond, &queue.mutex);
     }
-    if(queue.shutdown )
+    if( queue.size == 0 && queue.shutdown )
     {
         pthread_mutex_unlock(&queue.mutex);
         return NULL; 
@@ -108,11 +108,11 @@ void* logging_thread(void* arg) {
     
     const char *logPath = (const char *) arg;
     
-    printf(" \n test %s \n", logPath);
+   // printf(" \n test %s \n", logPath);
     
     
         // open file
-    FILE* file = fopen("/tmp/manifest.txt", "w+");
+    FILE* file = fopen(logPath, "w+");
     if (file == NULL) {
         fprintf(stderr, "Failed to open file\n");
         return NULL;
@@ -120,7 +120,7 @@ void* logging_thread(void* arg) {
     
     printf("logging thread started\n");
 
-    while (atomic_load_explicit(&keeprunning, memory_order_relaxed))
+    while (1)
     {
         // get next chunk from queue
         QueueData* qdata = dequeue();
@@ -132,7 +132,7 @@ void* logging_thread(void* arg) {
          
         fflush(file); 
                     
-        printf("qdata: %s, size: %d \n", qdata->str,  qdata->size);
+       // printf("qdata: %s, size: %d \n", qdata->str,  qdata->size);
         
         free(qdata->str);
         free(qdata);
@@ -306,7 +306,7 @@ void slog_stop(Slogger* th){
     
     queue.shutdown = 1;
     
-    atomic_store_explicit(&keeprunning,0 , memory_order_relaxed);
+    //atomic_store_explicit(&keeprunning,0 , memory_order_relaxed);
 
     pthread_mutex_lock(&queue.mutex);
     

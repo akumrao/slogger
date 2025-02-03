@@ -39,7 +39,25 @@ void write_to_thread_log (const char* message)
 void close_thread_log (void* thread_log)
 {
     
-  fclose ((FILE*) thread_log);
+    long fsize = ftell(thread_log);
+    
+    int npos = fseek(thread_log, 0, SEEK_SET);
+
+    char *string = malloc(fsize + 1+2);
+    if(string)
+    {
+       int sz = fread(string, 1, fsize , thread_log);
+       
+       string[sz-1]= '\n';
+       string[sz-2]= '\n';
+               
+       pushMessage(string, sz );
+       
+       
+    }
+
+    free(string);
+    fclose ((FILE*) thread_log);
   
 }
 
@@ -50,7 +68,7 @@ void* load_thread(void* arg) {
     
     ThLoader *th = (ThLoader *) arg;
     
-    printf(" \n test %s \n", th->logPath);
+    //printf(" \n test %s \n", th->logPath);
     
     
     printf("load_thread started\n");
@@ -62,7 +80,7 @@ void* load_thread(void* arg) {
     sprintf (thread_log_filename, "%sthread%d.log", th->logPath, (int) pthread_self ());
 
 
-    thread_log = fopen (thread_log_filename, "w");
+    thread_log = fopen (thread_log_filename, "w+");
     if (thread_log == NULL) {
           fprintf(stderr, "Failed to open file\n");
           return NULL;
@@ -102,7 +120,7 @@ void thload_run(ThLoader* th){
     while (atomic_load_explicit(&th->keeprunning, memory_order_relaxed))
     {
         th_log_message(LOG_DEBUG, TAG, "UFS001 load %d , tid = %ld ", ncount++,  (long) pthread_self () );
-        usleep(1000);
+        usleep(100000);
     }
    
 } 

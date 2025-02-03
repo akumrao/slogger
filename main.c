@@ -16,26 +16,8 @@
 #include "threadload.h"
 
 
-
-
 #define TAG "UFS : Benchmark"
 
-
-//https://github.com/H-jamil/transferService/blob/main/sender.c
-
-//https://github.com/raysan5/raylib/blob/master/examples/core/core_loading_thread.c
-
-//while (atomic_load_explicit(&flag, SOME_MEMORY_ORDER)) ...
-
-
-//#define CHUNK_SIZE 1048576 // 1 MB
-//#define FILE_PATH "/tmp/FILE0.txt"
-
-
-
-
-
-//
 
 
  Condwait condwait = (Condwait){  condwait_wait, condwait_signal, condwait_stop }; 
@@ -100,20 +82,14 @@ int main()
     exit(0);
 }*/
 
-
+#define NOOFTHREADLOAD 5
 int main(int argc, char**argv) 
 {
-
-
-    
     
     signal(SIGINT, intHandler); 
-    
     printf("\nmain\n");
-        
-    
 
-    Slogger slogger = (Slogger){  NULL, slog_start, slog_stop, "/tmp/test.log" }; 
+    Slogger slogger = (Slogger){  NULL, slog_start, slog_stop, "/tmp/UFS001.log" }; 
     slogger.start(&slogger); 
     
     
@@ -123,20 +99,31 @@ int main(int argc, char**argv)
     log_message(LOG_DEBUG, NULL, TAG, "Gear and lanes are configured and validated");
     
  
- 
-    ThLoader tloader = (ThLoader){ thload_start, thload_run, thload_stop, "/tmp/"  }; 
-    tloader.start(&tloader); 
+   // ThLoader tloader = (ThLoader){ thload_start, thload_run, thload_stop, "/tmp/"  }; 
+    
+   // tloader.start(&tloader); 
+    
+    ThLoader tloaderArr[NOOFTHREADLOAD];
+    
+    for(int n=0 ; n < NOOFTHREADLOAD ; ++n )
+    {
+        tloaderArr[n] = (ThLoader){ thload_start, thload_run, thload_stop, "/tmp/"  }; 
+        tloaderArr[n].start(&tloaderArr[n]); 
+    }
+    
+    condwait.wait(&condwait, 2, 1);
     
     
     
-    condwait.wait(&condwait, 25, 1);
+    for(int n=0 ; n < NOOFTHREADLOAD ; ++n )
+    {
+        tloaderArr[n].stop(&tloaderArr[n]); 
+    }
     
-    tloader.stop(&tloader); 
-
+//    tloader.stop(&tloader); 
     
     
     log_message(LOG_DEBUG, NULL, TAG, "UFS001 ended");
-    
     
     slogger.stop(&slogger);
     
