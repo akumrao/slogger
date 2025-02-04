@@ -187,7 +187,7 @@ void pushMessage(const char *str , long size )
     {
         // create task data
         //tasks->str = malloc(size);
-        if(tasks->str )
+        if(str )
         {
             //memcpy( tasks->str , str, size);
             tasks->str = str;

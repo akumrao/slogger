@@ -55,7 +55,7 @@ void close_thread_log (void* thread_log)
 
            pushMessage(string, sz );
         }
-        free(string);
+        //free(string);
     }
     fclose ((FILE*) thread_log);
   
