@@ -186,10 +186,11 @@ void pushMessage(const char *str , long size )
     if(tasks)
     {
         // create task data
-        tasks->str = malloc(size);
+        //tasks->str = malloc(size);
         if(tasks->str )
         {
-            memcpy( tasks->str , str, size);
+            //memcpy( tasks->str , str, size);
+            tasks->str = str;
             tasks->size = size;
             // enqueue task
             enqueue(tasks);
@@ -255,7 +256,10 @@ void log_message(int log_lvl, FILE *fp, const char *tag, const char *fmt, ...)
 //    va_end(args);
 
     
-    char store[2048];
+    char *store = malloc(2048);
+    
+    if(!store)
+        return;
     
     //sprintf(store, "%s %s %s %d \n", "__FILE__", "__LINE__", message , tid);
     int ncount = 0;

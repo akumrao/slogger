@@ -82,7 +82,7 @@ int main()
     exit(0);
 }*/
 
-#define NOOFTHREADLOAD 20
+#define NOOFTHREADLOAD 0
 int main(int argc, char**argv) 
 {
     
@@ -111,7 +111,7 @@ int main(int argc, char**argv)
         tloaderArr[n].start(&tloaderArr[n]); 
     }
     
-    condwait.wait(&condwait, 2, 1);
+    condwait.wait(&condwait, 0, 500);
     
     
     

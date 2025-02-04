@@ -23,9 +23,11 @@ int condwait_wait(Condwait* th, int timeInSec, int timeInMs){
     
 
     clock_gettime(CLOCK_REALTIME, &timeout);
-    timeout.tv_sec += timeInSec; // Timeout of seconds
-    timeout.tv_nsec += (1000UL*timeInMs)*1000UL; // Timeout in millsecs
-
+    
+    uint64_t future_ns = timeout.tv_nsec + timeInMs * 1000000L;
+    timeout.tv_nsec = future_ns % 1000000000;
+    timeout.tv_sec += timeInSec + future_ns / 1000000000; // Timeout of seconds
+   
     pthread_mutex_lock(&th->mutex);
      
     int result = pthread_cond_timedwait(&th->cond, &th->mutex, &timeout);

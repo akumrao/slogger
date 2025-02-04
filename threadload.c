@@ -40,23 +40,23 @@ void close_thread_log (void* thread_log)
 {
     
     long fsize = ftell(thread_log);
-    
-    int npos = fseek(thread_log, 0, SEEK_SET);
-
-    char *string = malloc(fsize + 1+2);
-    if(string)
+   
+    if(fsize > 0)
     {
-       int sz = fread(string, 1, fsize , thread_log);
-       
-       string[sz-1]= '\n';
-       string[sz-2]= '\n';
-               
-       pushMessage(string, sz );
-       
-       
-    }
+        int npos = fseek(thread_log, 0, SEEK_SET);
 
-    free(string);
+        char *string = malloc(fsize + 1+2);
+        if(string)
+        {
+           int sz = fread(string, 1, fsize , thread_log);
+
+           string[sz-1]= '\n';
+           string[sz-2]= '\n';
+
+           pushMessage(string, sz );
+        }
+        free(string);
+    }
     fclose ((FILE*) thread_log);
   
 }
@@ -116,11 +116,13 @@ void thload_start(ThLoader* th){
 
 void thload_run(ThLoader* th){ 
     
-   Condwait condwait = (Condwait){  condwait_wait, condwait_signal, condwait_stop }; 
+ 
      
     int ncount = 0;
     while (atomic_load_explicit(&th->keeprunning, memory_order_relaxed))
     {
+        Condwait condwait = (Condwait){  condwait_wait, condwait_signal, condwait_stop }; 
+          
         time_t rawtime;
         struct tm * timeinfo;
 
@@ -137,7 +139,7 @@ void thload_run(ThLoader* th){
         condwait.stop(&condwait);
     }
    
-    condwait.stop(&condwait);
+   
     
 } 
 
