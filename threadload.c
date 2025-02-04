@@ -13,7 +13,7 @@
 #include <assert.h>
 #include <string.h>
 #include <signal.h>
-
+#include "condwait.h"
 
 
 
@@ -116,6 +116,34 @@ void thload_start(ThLoader* th){
 
 void thload_run(ThLoader* th){ 
     
+   Condwait condwait = (Condwait){  condwait_wait, condwait_signal, condwait_stop }; 
+     
+    int ncount = 0;
+    while (atomic_load_explicit(&th->keeprunning, memory_order_relaxed))
+    {
+        time_t rawtime;
+        struct tm * timeinfo;
+
+        time ( &rawtime );
+        timeinfo = localtime ( &rawtime );
+      //  printf ( "Current local time and date: %s", asctime (timeinfo) );
+
+        //th_log_message(LOG_DEBUG, TAG, "UFS001 time=%s, load %d , tid = %ld ", asctime (timeinfo), ncount++,  (long) pthread_self () );
+        
+        th_log_message(LOG_DEBUG, TAG, "UFS001 load %d , tid = %ld ",  ncount++,  (long) pthread_self () );
+        
+        condwait.wait(&condwait, 0, 100);
+        
+        condwait.stop(&condwait);
+    }
+   
+    condwait.stop(&condwait);
+    
+} 
+
+
+void thload_run_sleep(ThLoader* th){ 
+    
     int ncount = 0;
     while (atomic_load_explicit(&th->keeprunning, memory_order_relaxed))
     {
@@ -124,7 +152,6 @@ void thload_run(ThLoader* th){
     }
    
 } 
-
  
 
 void thload_stop(ThLoader* th){ 

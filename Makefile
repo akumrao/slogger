@@ -5,7 +5,7 @@ OUT      = main
 CC      = gcc
 CFLAGS  = -g -Wall 
 #LDFLAGS = -L/additional/lib/dir
-#LDLIBS  = -ldependency1 -ldependency2
+LDLIBS  = -lpthread
 
 $(OUT): $(OBJFILES)
 

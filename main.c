@@ -82,14 +82,14 @@ int main()
     exit(0);
 }*/
 
-#define NOOFTHREADLOAD 5
+#define NOOFTHREADLOAD 20
 int main(int argc, char**argv) 
 {
     
     signal(SIGINT, intHandler); 
     printf("\nmain\n");
 
-    Slogger slogger = (Slogger){  NULL, slog_start, slog_stop, "/tmp/UFS001.log" }; 
+    Slogger slogger = (Slogger){   slog_start, slog_stop, "/tmp/UFS001.log" }; 
     slogger.start(&slogger); 
     
     
