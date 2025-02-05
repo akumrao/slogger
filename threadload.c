@@ -102,7 +102,7 @@ void* load_thread(void* arg) {
     }
     else
     {
-        slog_message(LOG_DEBUG, NULL, TAG, "End of thread %s ",  (long) pthread_self () );
+        slog_message(LOG_DEBUG, TAG, "End of thread %s ",  (long) pthread_self () );
         
         fclose (th->thread_log);
         
