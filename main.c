@@ -16,7 +16,7 @@
 #include "threadload.h"
 
 
-#define TAG "UFS : Benchmark"
+#define TAG "GPU : Benchmark"
 
 
 
@@ -82,24 +82,25 @@ int main()
     exit(0);
 }*/
 
-#define NOOFTHREADLOAD 0
+#define NOOFTHREADLOAD 50
 int main(int argc, char**argv) 
 {
     
     signal(SIGINT, intHandler); 
-    printf("\nmain\n");
+    signal(SIGTSTP, intHandler); 
+            
 
-    Slogger slogger = (Slogger){   slog_start, slog_stop, "/tmp/UFS001.log" }; 
+    Slogger slogger = (Slogger){   slog_start, slog_stop, "/tmp/GPU001.log" }; 
     slogger.start(&slogger); 
     
     
        
-    log_message(LOG_DEBUG, NULL, TAG, "UFS001 started");
+    slog_message(LOG_DEBUG, TAG, "UFS001 started");
     
-    log_message(LOG_DEBUG, NULL, TAG, "Gear and lanes are configured and validated");
+    slog_message(LOG_DEBUG, TAG, "Gear and lanes are configured and validated");
     
  
-   // ThLoader tloader = (ThLoader){ thload_start, thload_run, thload_stop, "/tmp/"  }; 
+   // ThLoader tloader = (ThLoader){ thload_start, thload_run, thload_stop, 0, "/tmp/", "parameter.txt  }; 
     
    // tloader.start(&tloader); 
     
@@ -107,12 +108,11 @@ int main(int argc, char**argv)
     
     for(int n=0 ; n < NOOFTHREADLOAD ; ++n )
     {
-        tloaderArr[n] = (ThLoader){ thload_start, thload_run, thload_stop, "/tmp/"  }; 
+        tloaderArr[n] = (ThLoader){ thload_start, thload_run, thload_stop, 1 , "/tmp/"  }; 
         tloaderArr[n].start(&tloaderArr[n]); 
     }
     
-    condwait.wait(&condwait, 0, 500);
-    
+    condwait.wait(&condwait, 5, 10);
     
     
     for(int n=0 ; n < NOOFTHREADLOAD ; ++n )
@@ -123,7 +123,7 @@ int main(int argc, char**argv)
 //    tloader.stop(&tloader); 
     
     
-    log_message(LOG_DEBUG, NULL, TAG, "UFS001 ended");
+    slog_message(LOG_DEBUG,  TAG, "UFS001 ended");
     
     slogger.stop(&slogger);
     

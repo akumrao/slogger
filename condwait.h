@@ -1,5 +1,5 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
+ * Authored Arvind &  Rajnee  
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
@@ -20,10 +20,10 @@
 extern "C" {
 #endif
 
-    
 typedef struct _condwait { 
   
   int (*wait)( struct _condwait*, int, int ); 
+  
   void (*signal)( struct _condwait*); 
   
   void (*stop)( struct _condwait*); 

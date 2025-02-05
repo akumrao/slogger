@@ -29,10 +29,14 @@ typedef struct _threadload {
   void (*run)( struct _threadload*); 
   void (*stop)( struct _threadload*); 
   
-  char logPath[MAX_PATH_LENGTH];
-  atomic_bool keeprunning;  
+  int clubbed; // thread clubbed 
+  char logPath[MAX_PATH_LENGTH]; //for eg /tmp/
+  char logfile[MAX_PATH_LENGTH]; //UFS001.txt  
   
+  atomic_bool keeprunning; 
   pthread_t threads; 
+  
+  FILE *thread_log;
   
 } ThLoader ; 
 

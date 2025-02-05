@@ -116,7 +116,7 @@ extern FILE *logcat_fp;
 /* Gets the current timestamp and stores it in the provided string */
 void get_timestamp(char *timestamp_str, size_t str_size);
 
-void th_log_message(int log_lvl,  const char *tag, const char *fmt, ...) ;
+void log_message(int log_lvl, FILE* fp,  const char *tag, const char *fmt, ...) ;
 
 #ifdef __cplusplus
 }

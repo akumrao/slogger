@@ -75,11 +75,9 @@ void get_timestamp(char *timestamp_str, size_t str_size) {
 
 extern pthread_key_t thread_log_key;
 
-void th_log_message(int log_lvl, const char *tag, const char *fmt, ...) {
+void log_message(int log_lvl, FILE* fp, const char *tag, const char *fmt, ...) {
   if (log_lvl <= console_loglevel) {
       
-    FILE* fp = (FILE*) pthread_getspecific (thread_log_key);
-     
     va_list args;
     va_start(args, fmt);
 

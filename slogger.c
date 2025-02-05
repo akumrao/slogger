@@ -225,7 +225,7 @@ void pushMessage(const char *str , long size )
  * Returns:
  *   void - This function does not return a value.
  */
-void log_message(int log_lvl, FILE *fp, const char *tag, const char *fmt, ...)
+void slog_message(int log_lvl, const char *tag, const char *fmt, ...)
 {
   //if (log_lvl <= console_loglevel)
   {
@@ -233,27 +233,27 @@ void log_message(int log_lvl, FILE *fp, const char *tag, const char *fmt, ...)
     get_timestamp(timestamp, sizeof(timestamp));
 
     va_list args;
-//    va_start(args, fmt);
-//    switch (log_type) {
-//      case LOG_TYPE_LOGCAT:
-//      case LOG_TYPE_ADBSHELL:
-//        switch (log_lvl) {
-//          case LOG_INFO:
-//            printf(COLOR_BLUE "%s  INFO %s: ", timestamp, tag); VAR_LOG; break;
-//          case LOG_ERR:
-//            printf(COLOR_RED "%s ERROR %s: ", timestamp, tag); VAR_LOG; break;
-//          case LOG_DEBUG:
-//            printf(COLOR_YELLOW "%s DEBUG %s: ", timestamp, tag); VAR_LOG; break;
-//          default:
-//            printf(COLOR_GREEN "%s  WARN %s: ", timestamp, tag); VAR_LOG; break;
-//        }
-//        break;
-//      case LOG_TYPE_SERIAL:
-//        break;
-//      default:
-//        break;
-//    }
-//    va_end(args);
+    va_start(args, fmt);
+    switch (log_type) {
+      case LOG_TYPE_LOGCAT:
+      case LOG_TYPE_ADBSHELL:
+        switch (log_lvl) {
+          case LOG_INFO:
+            printf(COLOR_BLUE "%s  INFO %s: ", timestamp, tag);  break;
+          case LOG_ERR:
+            printf(COLOR_RED "%s ERROR %s: ", timestamp, tag);  break;
+          case LOG_DEBUG:
+            printf(COLOR_YELLOW "%s DEBUG %s: ", timestamp, tag);  break;
+          default:
+            printf(COLOR_GREEN "%s  WARN %s: ", timestamp, tag);  break;
+        }
+        break;
+      case LOG_TYPE_SERIAL:
+        break;
+      default:
+        break;
+    }
+    va_end(args);
 
     
     char *store = malloc(2048);
@@ -278,11 +278,11 @@ void log_message(int log_lvl, FILE *fp, const char *tag, const char *fmt, ...)
           sprintf(&store[ncount], "%s  WARN %s:  ", timestamp, tag); break;
       }
       va_start(args, fmt); /* Restart the variable argument list */
-         ncount += vsprintf(&store[ncount], fmt, args);  ncount += sprintf(&store[ncount], "\n"); fflush(fp);
+         ncount += vsprintf(&store[ncount], fmt, args);  ncount += sprintf(&store[ncount], "\n"); //fflush(fp);
       va_end(args);
     }
     
-    printf(store);
+   
     pushMessage(store , strlen(store) );
     
     
@@ -293,12 +293,11 @@ void log_message(int log_lvl, FILE *fp, const char *tag, const char *fmt, ...)
 void slog_start(Slogger* th){ 
     
    // pthread_t threads;
-    pthread_create(&th->threads, NULL, logging_thread, th->logPath);
+    pthread_create(&th->threads, NULL, logging_thread, th->logFile);
 
     // initialize queue
     queue.capacity = CAPACITY;
     queue.data = malloc(queue.capacity * sizeof(QueueData*));
-    
     
 } 
  

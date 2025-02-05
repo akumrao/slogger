@@ -28,7 +28,7 @@ typedef struct _slogger {
   void (*start)( struct _slogger*); 
   void (*stop)( struct _slogger*); 
   
-  char logPath[MAX_PATH_LEN];
+  char logFile[MAX_PATH_LEN];  // for eg /tmp/UFS001.txt
   
   pthread_t *threads; 
   
@@ -36,8 +36,10 @@ typedef struct _slogger {
 
     
 void slog_start(Slogger* th);
-
 void slog_stop(Slogger* th);
+
+void slog_message(int log_lvl, const char *tag, const char *fmt, ...);
+
 
 #ifdef __cplusplus
 }
