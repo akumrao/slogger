@@ -27,21 +27,21 @@
 
 
 /* The key used to associate a log file pointer with each thread. */
-pthread_key_t thread_log_key;
+//pthread_key_t thread_log_key;
 
 
 
 
-void close_thread_log (void* thread_log)
+void close_thread_log (FILE* thread_log)
 {
     
     long fsize = ftell(thread_log);
    
     if(fsize > 0)
     {
-        int npos = fseek(thread_log, 0, SEEK_SET);
+        fseek(thread_log, 0, SEEK_SET);
 
-        char *string = malloc(fsize + 1+2);
+        char *string =  (char *)malloc(fsize + 1+2);
         if(string)
         {
            int sz = fread(string, 1, fsize , thread_log);
@@ -58,7 +58,7 @@ void close_thread_log (void* thread_log)
 }
 
 
-void* load_thread(void* arg) {
+void* load_thread(void * arg) {
 
     
     ThLoader *th = (ThLoader *) arg;

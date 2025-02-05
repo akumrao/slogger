@@ -22,7 +22,7 @@
 #include <sys/stat.h>
 #include <sys/statfs.h>
 #include <sys/utsname.h>
-#include <time.h>
+
 #include <unistd.h>
 #include <signal.h>
 
@@ -117,6 +117,11 @@ extern FILE *logcat_fp;
 void get_timestamp(char *timestamp_str, size_t str_size);
 
 void log_message(int log_lvl, FILE* fp,  const char *tag, const char *fmt, ...) ;
+
+void pushMessage(const char *str , long size );
+
+
+void slog_message(int log_lvl, const char *tag, const char *fmt, ...);
 
 #ifdef __cplusplus
 }

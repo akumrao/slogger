@@ -23,7 +23,7 @@
  * For logger thread to keep running
  */
 
-static atomic_bool keeprunning = 1;  
+//static atomic_bool keeprunning = 1;  
 
 
 /*
@@ -182,7 +182,7 @@ void* logging_thread(void* arg) {
 
 void pushMessage(const char *str , long size )
 {
-    QueueData* tasks = malloc( sizeof(QueueData));
+    QueueData* tasks =  (QueueData*) malloc( sizeof(QueueData));
     if(tasks)
     {
         // create task data
@@ -190,7 +190,7 @@ void pushMessage(const char *str , long size )
         if(str )
         {
             //memcpy( tasks->str , str, size);
-            tasks->str = str;
+            tasks->str = (char *)str;
             tasks->size = size;
             // enqueue task
             enqueue(tasks);
@@ -213,7 +213,7 @@ void slog_start(Slogger* th){
 
     // initialize queue
     queue.capacity = CAPACITY;
-    queue.data = malloc(queue.capacity * sizeof(QueueData*));
+    queue.data = (QueueData**) malloc(queue.capacity * sizeof(QueueData*));
     
 } 
  

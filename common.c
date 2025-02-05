@@ -38,6 +38,10 @@ int console_loglevel = LOG_DEBUG;
  * Returns:
  *   void - This function does not return a value.
  */
+
+#define _BSD_SOURCE
+#include <sys/time.h>
+
 void get_timestamp(char *timestamp_str, size_t str_size) {
   int msec = 0;
   char timestr[BUFFER_SIZE] = {0};
@@ -198,7 +202,7 @@ void slog_message(int log_lvl, const char *tag, const char *fmt, ...)
     va_end(args);
 
     
-    char *store = malloc(2048);
+    char *store = (char *)malloc(2048);
     
     if(!store)
         return;
