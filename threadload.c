@@ -125,17 +125,16 @@ void thload_start(ThLoader* th){
     
 } 
 
-void thload_run_cond(ThLoader* th){ 
+void thload_run(ThLoader* th){ 
     
- 
-     
+    Condwait condwait = (Condwait){  condwait_int, condwait_wait, condwait_signal, condwait_stop }; 
+    
+    condwait.init(&condwait);
+    
     int ncount = 0;
     while (atomic_load_explicit(&th->keeprunning, memory_order_relaxed))
     {
-        Condwait condwait = (Condwait){  condwait_wait, condwait_signal, condwait_stop }; 
-          
-   
-        
+       
         if(th->clubbed)
           log_message(LOG_DEBUG, th->thread_log, TAG, "GPU001 load %d , tid = %ld ", ncount++,  (long) pthread_self () );
         else
@@ -144,15 +143,16 @@ void thload_run_cond(ThLoader* th){
         
         
         condwait.wait(&condwait, 0, 100);
+       // usleep(10000);
         
-        condwait.stop(&condwait);
+        
     }
    
-    
+    condwait.stop(&condwait);
 } 
 
 
-void thload_run(ThLoader* th){ 
+void thload_run_withsleep(ThLoader* th){ 
     
     int ncount = 0;
     while (atomic_load_explicit(&th->keeprunning, memory_order_relaxed))

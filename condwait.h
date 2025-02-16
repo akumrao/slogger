@@ -22,6 +22,8 @@ extern "C" {
 
 typedef struct _condwait { 
   
+  void (*init)( struct _condwait* ); 
+     
   int (*wait)( struct _condwait*, int, int ); 
   
   void (*signal)( struct _condwait*); 
@@ -30,11 +32,12 @@ typedef struct _condwait {
     
   pthread_mutex_t mutex;
   pthread_cond_t cond;
-    
+  struct timespec timeout;
      
 } Condwait ; 
 
-    
+void condwait_int(Condwait* th);
+
 int condwait_wait(Condwait* th, int timeInSec, int timeInMs);
 
 void condwait_signal(Condwait* th);

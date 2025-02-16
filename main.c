@@ -14,13 +14,13 @@
 #include "common.h"
 #include "condwait.h"
 #include "threadload.h"
-
+#include "spwan.h"
 
 #define TAG "GPU : Benchmark"
 
 
 
- Condwait condwait = (Condwait){  condwait_wait, condwait_signal, condwait_stop }; 
+ Condwait condwait = (Condwait){ condwait_int, condwait_wait, condwait_signal, condwait_stop }; 
  
 
 void intHandler(int sig)
@@ -82,27 +82,64 @@ int main()
     exit(0);
 }*/
 
-#define NOOFTHREADLOAD 50
+#define NOOFTHREADLOAD 2
 int main(int argc, char**argv) 
 {
     
     signal(SIGINT, intHandler); 
     signal(SIGTSTP, intHandler); 
             
-
+    condwait.init(&condwait);
+        
     Slogger slogger = (Slogger){   slog_start, slog_stop, "/tmp/GPU001.log" }; 
     slogger.start(&slogger); 
-    
     
        
     slog_message(LOG_DEBUG, TAG, "UFS001 started");
     
     slog_message(LOG_DEBUG, TAG, "Gear and lanes are configured and validated");
     
- 
-   // ThLoader tloader = (ThLoader){ thload_start, thload_run, thload_stop, 0, "/tmp/", "parameter.txt  }; 
     
-   // tloader.start(&tloader); 
+//    char* arg_list[] = {
+//        "ls",     /* argv[0], the name of the program.  */
+//        "-l", 
+//        "/",
+//        NULL      /* The argument list must end with a NULL.  */
+//      };
+    
+    //exec_top();
+      
+    char* arg_list[] = {  "top",  "-d",   "1",   NULL  };
+    
+    Exec thexec = (Exec){ exec_start, exec_run, exec_stop,  "/tmp/", "parameter.txt", arg_list}; 
+    
+    thexec.start(&thexec); 
+    
+    
+    condwait.wait(&condwait, 3, 10);
+    
+    
+    thexec.stop(&thexec); 
+    
+    slog_message(LOG_DEBUG,  TAG, "UFS001 ended");
+    
+    slogger.stop(&slogger);
+    
+    condwait.stop(&condwait);
+    
+    
+    
+    return 0;
+    
+    signal(SIGINT, intHandler); 
+    signal(SIGTSTP, intHandler); 
+            
+    condwait.init(&condwait);
+
+ 
+//    ThLoader tloader = (ThLoader){ thload_start, thload_run, thload_stop, 0, "/tmp/", "parameter.txt"  }; 
+    
+//    tloader.start(&tloader); 
     
     ThLoader tloaderArr[NOOFTHREADLOAD];
     
@@ -121,7 +158,6 @@ int main(int argc, char**argv)
     }
     
 //    tloader.stop(&tloader); 
-    
     
     slog_message(LOG_DEBUG,  TAG, "UFS001 ended");
     

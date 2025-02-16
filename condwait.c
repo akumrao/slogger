@@ -2,10 +2,19 @@
 #include "condwait.h"
 #include "common.h"
 
+void condwait_int(Condwait* th)
+{
+    pthread_mutex_init(&th->mutex, NULL);
+    pthread_cond_init(&th->cond, NULL);
+    
+    clock_gettime(CLOCK_REALTIME, &th->timeout);
+    
+}
+
 int condwait_wait(Condwait* th, int timeInSec, int timeInMs){ 
     
 
-    struct timespec timeout;
+    
     
 //    pthread_condattr_t attr;
 //    pthread_condattr_init( &attr);
@@ -18,19 +27,13 @@ int condwait_wait(Condwait* th, int timeInSec, int timeInMs){
 
     // Initialize mutex and condition variable
     
-    pthread_mutex_init(&th->mutex, NULL);
-    pthread_cond_init(&th->cond, NULL);
-    
-
-    clock_gettime(CLOCK_REALTIME, &timeout);
-    
-    uint64_t future_ns = timeout.tv_nsec + timeInMs * 1000000L;
-    timeout.tv_nsec = future_ns % 1000000000;
-    timeout.tv_sec += timeInSec + future_ns / 1000000000; // Timeout of seconds
+    u_int64_t future_ns = th->timeout.tv_nsec + timeInMs * 1000000L;
+    th->timeout.tv_nsec = future_ns % 1000000000;
+    th->timeout.tv_sec += timeInSec + future_ns / 1000000000; // Timeout of seconds
    
     pthread_mutex_lock(&th->mutex);
      
-    int result = pthread_cond_timedwait(&th->cond, &th->mutex, &timeout);
+    int result = pthread_cond_timedwait(&th->cond, &th->mutex, &th->timeout);
 
     pthread_mutex_unlock(&th->mutex);
 
