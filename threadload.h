@@ -1,27 +1,30 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/* 
- * File:   threadload.h
- * Author: aumrao
+ * Copyright (c) 2024-25 Google SLT Team
  *
- * Created on January 23, 2025, 11:25 AM
+ * FileName:      threadload.h
+ * Description:   This header file defines the structure and function 
+ *                declarations for managing threads in GPU test cases.
+ * Author:        Arvind Umrao <aumrao@google.com> 
+ *                Rajanee Kumbhar <rajaneek@google.com>
  */
-
 
 #ifndef THREADLOAD_H
 #define THREADLOAD_H
 
 #include <pthread.h>
+
+#ifdef __cplusplus
+#include <atomic>
+using namespace std;
+#else
 #include <stdatomic.h>
+#endif
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+#define MAX_PATH_LENGTH 128
 
 typedef struct _threadload { 
 
@@ -29,11 +32,20 @@ typedef struct _threadload {
   void (*run)( struct _threadload*); 
   void (*stop)( struct _threadload*); 
   
-  int clubbed; // thread clubbed 
+  bool clubbed; // thread clubbed
   char logPath[MAX_PATH_LENGTH]; //for eg /tmp/
   char logfile[MAX_PATH_LENGTH]; //UFS001.txt  
-  
-  atomic_bool keeprunning; 
+
+
+    #ifdef __cplusplus
+    //    atomic<bool> keeprunning{1};
+    volatile int keeprunning;
+    #else
+    atomic_bool keeprunning ;
+    #endif
+
+    bool localFile;
+
   pthread_t threads; 
   
   FILE *thread_log;

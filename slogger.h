@@ -1,14 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/* 
- * File:   slogger.h
- * Author: aumrao
- *
- * Created on January 23, 2025, 11:25 AM
+/**
+ * File: slogger.h
+ * Description: This header file defines the `Slogger` structure and functions 
+ *              for managing a logging system using threads. It includes methods 
+ *              to start and stop a logging thread and manage log file paths.
+ * Author:      Arvind Umrao <aumrao@google.com> 
+ *              Rajanee Kumbhar <rajaneek@google.com>
  */
 
 #include <pthread.h>
@@ -19,7 +15,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 #define MAX_PATH_LEN 255
     
@@ -33,12 +28,9 @@ typedef struct _slogger {
   pthread_t threads; 
   
 } Slogger ; 
-
     
 void slog_start(Slogger* th);
 void slog_stop(Slogger* th);
-
-
 
 #ifdef __cplusplus
 }

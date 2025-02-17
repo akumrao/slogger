@@ -1,3 +1,11 @@
+/*
+ * FileName:      condwait.c
+ * Description:   Implements functions for condition variable synchronization, 
+ *                including `condwait_wait` for waiting with a timeout, 
+ *                `condwait_signal` for signaling, and `condwait_stop` for cleanup.
+  * Author:       Arvind Umrao <aumrao@google.com> 
+ *                Rajanee Kumbhar <rajaneek@google.com>
+ */
 
 #include "condwait.h"
 #include "common.h"
@@ -11,10 +19,21 @@ void condwait_int(Condwait* th)
     
 }
 
-int condwait_wait(Condwait* th, int timeInSec, int timeInMs){ 
-    
 
-    
+/**
+ * Function: int condwait_wait(Condwait* th, int timeInSec, int timeInMs)
+ * Description: Waits for a condition variable to be signaled, with a specified 
+ *              timeout (in seconds and milliseconds). Returns 0 if signaled, 
+ *              or ETIMEDOUT if the timeout occurs.
+ * Parameters:
+ *   - th: Condwait* - Pointer to a `Condwait` structure containing the mutex 
+ *     and condition variable.
+ *   - timeInSec: int - Timeout duration in seconds.
+ *   - timeInMs: int - Timeout duration in milliseconds.
+ * Returns:
+ *   int - 0 if the condition was signaled, or ETIMEDOUT if the timeout occurred.
+ */
+int condwait_wait(Condwait* th, int timeInSec, int timeInMs){ 
     
 //    pthread_condattr_t attr;
 //    pthread_condattr_init( &attr);
@@ -38,34 +57,44 @@ int condwait_wait(Condwait* th, int timeInSec, int timeInMs){
     pthread_mutex_unlock(&th->mutex);
 
     if (result == 0) {
-        printf("Condition signaled.\n");
+       // printf("Condition signaled.\n");
     } else if (result == ETIMEDOUT) {
-        printf("Timeout occurred.\n");
+        //printf("Timeout occurred.\n");
     }
     
     //pthread_attr_destroy(&attr);
     return result;
-    
 } 
  
-
+/**
+ * Function: void condwait_signal(Condwait* th)
+ * Description: Signals a condition variable to wake up a waiting thread. 
+ *              It unlocks the mutex before signaling and then re-locks it.
+ * Parameters:
+ *   - th: Condwait* - Pointer to a `Condwait` structure containing the mutex 
+ *     and condition variable.
+ * Returns:
+ *   void - No return value.
+ */
 void condwait_signal(Condwait* th){ 
-    
     pthread_mutex_unlock(&th->mutex);
-   
     pthread_cond_signal(&th->cond);
-    
     pthread_mutex_unlock(&th->mutex);
-   
 } 
 
-
+/**
+ * Function: void condwait_stop(Condwait* th)
+ * Description: Cleans up by destroying the condition variable and unlocking 
+ *              the associated mutex.
+ * Parameters:
+ *   - th: Condwait* - Pointer to a `Condwait` structure containing the mutex 
+ *     and condition variable.
+ * Returns:
+ *   void - No return value.
+ */
 void condwait_stop(Condwait* th){ 
     
     pthread_mutex_lock(&th->mutex);
-
     pthread_cond_destroy(&th->cond);
-    
     pthread_mutex_unlock(&th->mutex);
-   
 } 

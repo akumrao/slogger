@@ -1,14 +1,11 @@
 /*
- * Authored Arvind &  Rajnee  
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/* 
- * File:   condwait.h
- * Author: aumrao
- *
- * Created on January 23, 2025, 11:25 AM
+ * FileName:      condwait.h
+ * Description:   Defines the `Condwait` structure and function prototypes 
+ *                for handling condition variable synchronization. It includes 
+ *                functions to wait for a condition with a timeout, signal 
+ *                a waiting thread, and clean up condition variables and mutexes.
+  * Author:       Arvind Umrao <aumrao@google.com> 
+ *                Rajanee Kumbhar <rajaneek@google.com>
  */
 
 #include <pthread.h>
@@ -23,11 +20,8 @@ extern "C" {
 typedef struct _condwait { 
   
   void (*init)( struct _condwait* ); 
-     
   int (*wait)( struct _condwait*, int, int ); 
-  
   void (*signal)( struct _condwait*); 
-  
   void (*stop)( struct _condwait*); 
     
   pthread_mutex_t mutex;
@@ -35,13 +29,9 @@ typedef struct _condwait {
   struct timespec timeout;
      
 } Condwait ; 
-
 void condwait_int(Condwait* th);
-
 int condwait_wait(Condwait* th, int timeInSec, int timeInMs);
-
 void condwait_signal(Condwait* th);
-
 void condwait_stop(Condwait* th);
 
 #ifdef __cplusplus

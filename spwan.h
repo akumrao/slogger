@@ -1,9 +1,19 @@
+/*
+ * Copyright (c) 2024-25 Google SLT Team
+ *
+ * FileName:      threadload.c
+ * Description:   File have common code wrapper implementation to gpu.
+ * Author:        Arvind Umrao <aumrao@google.com> 
+ *                
+ */
+
 #ifndef EXEC_H
 #define EXEC_H
 
 #include <pthread.h>
 #include <stdatomic.h>
 
+#define MAX_PATH_LENGTH 256
 
 #ifdef __cplusplus
 extern "C" {

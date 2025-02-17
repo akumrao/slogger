@@ -1,6 +1,16 @@
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+/*
+ * 
+ *
+ * Filename:        Gpu_001.c
+ * TestCase:        GPU_001
+ * TestCase Name:   GPU Stress Test
+ * Description:     This file implement a function to stress the GPU and
+ *                  capture the parameter like- temperature, frequency, power
+ *                  voltage and measure the GPU performance.
+ *                  Capture all logs in output log file for further analysis.
+ *
+ * Author:          Arvind Umrao <aumrao@google.com>
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,7 +28,9 @@
 
 #define TAG "GPU : Benchmark"
 
-
+int console_loglevel = LOG_INFO;          /* Default logging level for console output */
+log_type_t log_type;                      /* Variable holds type of log have to be used */
+FILE *logcat_fp;                              /* Logcat file pointer */
 
  Condwait condwait = (Condwait){ condwait_int, condwait_wait, condwait_signal, condwait_stop }; 
  
@@ -85,7 +97,7 @@ int main()
 #define NOOFTHREADLOAD 2
 int main(int argc, char**argv) 
 {
-    
+#if 1 
     signal(SIGINT, intHandler); 
     signal(SIGTSTP, intHandler); 
             
@@ -95,10 +107,7 @@ int main(int argc, char**argv)
     slogger.start(&slogger); 
     
        
-    slog_message(LOG_DEBUG, TAG, "UFS001 started");
-    
-    slog_message(LOG_DEBUG, TAG, "Gear and lanes are configured and validated");
-    
+    slog_message(LOG_INFO, TAG, "GPU001 started");
     
  
 
@@ -111,19 +120,20 @@ int main(int argc, char**argv)
 //    thexecList.stop(&thexecList); 
 //    
     
-        //exec_top();
+    //exec_top(); // mpstat -P ALL  1
       
-    char* arg_list[] = {  "top",  "-d",   "1",   NULL  };
+    //char* arg_list[] = {  "top",  "-d",   "1",   NULL  };
+    char* arg_list[] = {  "mpstat",  "-P",   "ALL", "1",  NULL  };
     Exec thexec = (Exec){ exec_start, exec_run, exec_stop,  "/tmp/", "parameter.txt", arg_list}; 
     thexec.start(&thexec); 
     
     
-    condwait.wait(&condwait, 3, 10);
+    condwait.wait(&condwait, 5, 10);
     
     
     thexec.stop(&thexec); 
     
-    slog_message(LOG_DEBUG,  TAG, "UFS001 ended");
+    slog_message(LOG_INFO,  TAG, "GPU001 ended");
     
     slogger.stop(&slogger);
     
@@ -131,12 +141,20 @@ int main(int argc, char**argv)
     
     
     
-    return 0;
+#else
     
     signal(SIGINT, intHandler); 
     signal(SIGTSTP, intHandler); 
             
     condwait.init(&condwait);
+
+    Slogger slogger = (Slogger){   slog_start, slog_stop, "/tmp/GPU001.log" }; 
+    slogger.start(&slogger); 
+    
+       
+    slog_message(LOG_INFO, TAG, "GPU001 started");
+    
+    slog_message(LOG_INFO, TAG, "Gear and lanes are configured and validated");
 
  
 //    ThLoader tloader = (ThLoader){ thload_start, thload_run, thload_stop, 0, "/tmp/", "parameter.txt"  }; 
@@ -161,12 +179,12 @@ int main(int argc, char**argv)
     
 //    tloader.stop(&tloader); 
     
-    slog_message(LOG_DEBUG,  TAG, "UFS001 ended");
+    slog_message(LOG_INFO,  TAG, "GPU001 ended");
     
     slogger.stop(&slogger);
     
     condwait.stop(&condwait);
-    
+#endif
         
     printf("\nmain exit\n");
     

@@ -1,4 +1,11 @@
-
+/*
+ * Copyright (c) 2024-25 Google SLT Team
+ *
+ * FileName:      threadload.c
+ * Description:   File have common code wrapper implementation to gpu.
+ * Author:        Arvind Umrao <aumrao@google.com> 
+ *                
+ */
 
 #include "common.h"
 #include "threadload.h"
@@ -15,26 +22,26 @@
 #include <signal.h>
 #include "condwait.h"
 
-
-
-
 /*
  * For thread load
  */
 
-
 #define TAG "GPU : Load"
 
-
-/* The key used to associate a log file pointer with each thread. */
-//pthread_key_t thread_log_key;
-
-
-
-
-void close_thread_log (FILE* thread_log)
-{
-    
+/**
+ * Function: void close_thread_log(FILE* thread_log)
+ * Description: Closes the log file associated with the given
+ *              thread and processes the log data before closure.
+ *              The function reads the contents of the log file,
+ *              adds newline characters at the end, and pushes 
+ *              the processed message using the `pushMessage` function.
+ * Parameters:
+ *   - thread_log: FILE* - A pointer to the log file to be closed and processed.
+ * Returns:
+ *   void - No return value. The function modifies the log file contents
+ *          and performs cleanup.
+ */
+void close_thread_log (FILE* thread_log) {
     long fsize = ftell(thread_log);
    
     if(fsize > 0)
@@ -57,73 +64,100 @@ void close_thread_log (FILE* thread_log)
     thread_log = NULL;
 }
 
-
+/**
+ * Function: void* load_thread(void* arg)
+ * Description: Initializes a thread's log file based on `logPath` and 
+ *              either the thread's ID or a specified filename (`logfile`), 
+ *              then opens the log file and assigns the file pointer to 
+ *              the `ThLoader` structure.
+ * Parameters:
+ *   - arg: void* - Pointer to a `ThLoader` structure containing the 
+ *     log file information.
+ * Returns:
+ *   void* - Returns NULL if the file can't be opened, otherwise 
+ *           continues execution.
+ */
 void* load_thread(void * arg) {
-
-    
     ThLoader *th = (ThLoader *) arg;
-    
-    //printf(" \n test %s \n", th->logPath);
-    
-    
     printf("load_thread started\n");
     
-    char thread_log_filename[256];
-    // FILE* thread_log;
-
-     
+    char thread_log_filename[256]={'\0'};
      
    /* Generate the filename for this thread.s log file. */
-    
-    if(th->clubbed)
-        sprintf (thread_log_filename, "%sthread%d.log", th->logPath, (int) pthread_self ());
-    else
-       sprintf (thread_log_filename, "%s%s", th->logPath, th->logfile); 
 
-    th->thread_log = fopen (thread_log_filename, "w+");
-    if (th->thread_log == NULL) {
-          fprintf(stderr, "Failed to open file\n");
-          return NULL;
+    if(strlen(th->logfile))
+        th->localFile = true;
+    else
+        th->localFile = false;
+
+
+    if(th->localFile )
+        sprintf (thread_log_filename, "%s%s", th->logPath, th->logfile);
+    else if(th->clubbed)
+        sprintf (thread_log_filename, "%sthread%d.log", th->logPath, (int) pthread_self ());
+
+    if(strlen(thread_log_filename)) {
+        th->thread_log = fopen(thread_log_filename, "w+");
+        if (th->thread_log == NULL) {
+            fprintf(stderr, "Failed to open file\n");
+            return NULL;
+        }
     }
-  
 
     /* Store the file pointer in thread-specific data under thread_log_key. */
-   // pthread_setspecific (thread_log_key, thread_log);
-   //write_to_thread_log ("Thread starting.");                   
+    // pthread_setspecific (thread_log_key, thread_log);
+    // write_to_thread_log ("Thread starting.");                   
   
     th->run(th);
-    
-
-    if(th->clubbed)
+    if(th->thread_log)
     {
-        log_message(LOG_DEBUG, th->thread_log, TAG, "End of thread tid = %ld ", (long) pthread_self () );
+        slog_message(LOG_INFO, TAG, "End of thread %s ",  (long) pthread_self () );
+        fclose (th->thread_log);
+    }
+    else if(th->clubbed)
+    {
+        log_message(LOG_INFO, th->thread_log, TAG, "End of thread tid = %ld ", (long) pthread_self () );
         close_thread_log(th->thread_log);
-        
     }
     else
     {
-        slog_message(LOG_DEBUG, TAG, "End of thread %s ",  (long) pthread_self () );
-        
-        fclose (th->thread_log);
-        
+        slog_message(LOG_INFO, TAG, "End of thread %s ",  (long) pthread_self () );
     }
-    
-    
-    fflush(stdout);
-    
+   // fflush(stdout);
     return NULL;
 }
 
-
-
+/**
+ * Function: void thload_start(ThLoader* th)
+ * Description: Starts a new thread that executes the `load_thread` function,
+ *              setting the `keeprunning` flag to 1. The function allows 
+ *              the thread to run concurrently without waiting for it to finish.
+ * Parameters:
+ *   - th: ThLoader* - Pointer to a `ThLoader` structure with necessary information.
+ * Returns:
+ *   void - No return value. The function initiates a new thread and sets the 
+ *          `keeprunning` flag.
+ */
 void thload_start(ThLoader* th){ 
     
    // pthread_t threads;
     th->keeprunning = 1;
   //  pthread_key_create (&thread_log_key, close_thread_log);  // this line make the thread slow, please do not enable it
-    pthread_create(&th->threads, NULL, load_thread, th);
-    
+    pthread_create(&th->threads, NULL, load_thread, th); 
 } 
+
+/**
+ * Function: void thload_run_cond(ThLoader* th)
+ * Description: Runs a loop that logs messages and waits for a condition 
+ *              to be met, based on the `keeprunning` flag. The loop 
+ *              continues until the flag is set to false.
+ * Parameters:
+ *   - th: ThLoader* - Pointer to a `ThLoader` structure controlling 
+ *     the loop execution.
+ * Returns:
+ *   void - No return value. The function keeps running until `keeprunning`
+ *          is false.
+ */
 
 void thload_run(ThLoader* th){ 
     
@@ -135,10 +169,10 @@ void thload_run(ThLoader* th){
     while (atomic_load_explicit(&th->keeprunning, memory_order_relaxed))
     {
        
-        if(th->clubbed)
-          log_message(LOG_DEBUG, th->thread_log, TAG, "GPU001 load %d , tid = %ld ", ncount++,  (long) pthread_self () );
+        if(th->clubbed || th->localFile)
+          log_message(LOG_INFO, th->thread_log, TAG, "GPU001 load %d , tid = %ld ", ncount++,  (long) pthread_self () );
         else
-          slog_message(LOG_DEBUG,  TAG, "GPU001 load %d , tid = %ld ",  ncount++,  (long) pthread_self () );
+          slog_message(LOG_INFO,  TAG, "GPU001 load %d , tid = %ld ",  ncount++,  (long) pthread_self () );
 
         
         
@@ -151,32 +185,46 @@ void thload_run(ThLoader* th){
     condwait.stop(&condwait);
 } 
 
-
-void thload_run_withsleep(ThLoader* th){ 
-    
+/**
+ * Function: void thload_run(ThLoader* th)
+ * Description: Runs a loop that logs messages with the thread ID and a count,
+ *              then pauses for a short duration. The loop continues as long 
+ *              as the `keeprunning` flag is true.
+ * Parameters:
+ *   - th: ThLoader* - Pointer to a `ThLoader` structure controlling the loop 
+ *     execution.
+ * Returns:
+ *   void - No return value. The function runs until `keeprunning` is false.
+ */
+void thload_run_notused(ThLoader* th){ 
     int ncount = 0;
     while (atomic_load_explicit(&th->keeprunning, memory_order_relaxed))
     {
-        if(th->clubbed)
-           log_message(LOG_DEBUG, th->thread_log, TAG, "GPU001 load %d , tid = %ld ", ncount++,  (long) pthread_self () );
+        if(th->clubbed || th->localFile)
+           log_message(LOG_INFO, th->thread_log, TAG, "GPU001 load %d , tid = %ld ", ncount++,  (long) pthread_self () );
         else
-           slog_message(LOG_DEBUG, TAG, "GPU001 load %d , tid = %ld ",  ncount++,  (long) pthread_self () );
+           slog_message(LOG_INFO, TAG, "GPU001 load %d , tid = %ld ",  ncount++,  (long) pthread_self () );
         
         usleep(10000);
     }
-   
 } 
  
-
+/**
+ * Function: void thload_stop(ThLoader* th)
+ * Description: Stops the running thread by setting the `keeprunning` flag 
+ *              to false and waits for the thread to finish using `pthread_join`.
+ * Parameters:
+ *   - th: ThLoader* - Pointer to a `ThLoader` structure that controls 
+ *     the thread's execution.
+ * Returns:
+ *   void - No return value. The function halts the thread and waits for it to terminate.
+ */
 void thload_stop(ThLoader* th){ 
-    
-     
+
     printf("thload_stop\n" );
-    
+
     atomic_store_explicit(&th->keeprunning,0 , memory_order_relaxed);
 
     pthread_join(th->threads, NULL);
-
-   
 } 
 

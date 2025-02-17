@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2024-25 Google SLT Team
+ *
+ * FileName:      threadload.c
+ * Description:   File have common code wrapper implementation to gpu.
+ * Author:        Arvind Umrao <aumrao@google.com> 
+ *                
+ */
+
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -35,7 +44,7 @@ FILE * fork_dup2_exec(char* cArgv[], char type, int *pid) {
 		//Don't inherit parent signal handlers
 		signal(SIGINT,  SIG_IGN);
 		signal(SIGTERM, SIG_IGN);
-                signal(SIGTSTP, SIG_IGN);
+        signal(SIGTSTP, SIG_IGN);
 
 		if (type == 'r') {
 			close(fd[READ]);    //Close the READ end of the pipe since the child's fd is write-only
@@ -162,9 +171,6 @@ void* load_exec(void * arg) {
     
     //printf(" \n test %s \n", th->logPath);
     
-    
-    printf("load_thread started\n");
-    
     char thread_log_filename[256];
    
     sprintf (thread_log_filename, "%s%s", th->logPath, th->logfile); 
@@ -194,7 +200,6 @@ void exec_start(Exec* th){
     
     
     th->fp = fork_dup2_exec(th->argv, 'r', &th->pid);
-    
       
    // pthread_t threads;
     th->keeprunning = 1;
@@ -226,7 +231,7 @@ void exec_run(Exec* th){
 void exec_stop(Exec* th){ 
     
      
-    printf("thload_stop\n" );
+    printf("exec_stop\n" );
     
     if(!th->blocking )
     {
@@ -241,7 +246,7 @@ void exec_stop(Exec* th){
 
     pthread_join(th->threads, NULL);
 
-    printf("thload_joined\n" );
+    printf("exec_joined\n" );
 } 
 
 
