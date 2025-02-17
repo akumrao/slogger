@@ -161,9 +161,6 @@ int exec(char* argv[] ,  char **out, int* outsize   ) {
 
 }
 
-
-
-
 void* load_exec(void * arg) {
 
     
@@ -183,7 +180,6 @@ void* load_exec(void * arg) {
   
 
     th->run(th);
-    
 
 
     slog_message(LOG_DEBUG, TAG, "End of thread %s ",  (long) pthread_self () );
