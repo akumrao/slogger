@@ -35,6 +35,7 @@ FILE * fork_dup2_exec(char* cArgv[], char type, int *pid) {
 		//Don't inherit parent signal handlers
 		signal(SIGINT,  SIG_IGN);
 		signal(SIGTERM, SIG_IGN);
+                signal(SIGTSTP, SIG_IGN);
 
 		if (type == 'r') {
 			close(fd[READ]);    //Close the READ end of the pipe since the child's fd is write-only
@@ -100,6 +101,7 @@ int fork_dup2_exec_result(FILE * fp, pid_t child_pid) {
 
 		} else if (WIFSTOPPED(status)) {
 			printf("child stopped (signal %d)\n", WSTOPSIG(status));
+                        kill(child_pid, SIGCONT); 
 
 #ifdef WIFCONTINUED     /* Not all implementations support this */
 		} else if (WIFCONTINUED(status)) {
@@ -207,18 +209,18 @@ void exec_run(Exec* th){
     char command_out[100] = {0};
     int sz = 0;
 
-    while ( atomic_load_explicit(&th->keeprunning, memory_order_relaxed)          &&  ((sz = read(fileno(th->fp), command_out, sizeof(command_out)-1)) != 0  ))
+    while ( atomic_load_explicit(&th->keeprunning, memory_order_relaxed)  &&  ((sz = read(fileno(th->fp), command_out, sizeof(command_out)-1)) != 0  ))
     {   
        // printf("cmd %s\n", command_out);
-       fprintf(th->thread_log, "%s", command_out);
+       //fprintf(th->thread_log, "%s", command_out);
+       fwrite(command_out, 1, sz, th->thread_log);
 
     }
-
-   
 
       
     return ;
 } 
+
 
 
 void exec_stop(Exec* th){ 
@@ -226,10 +228,13 @@ void exec_stop(Exec* th){
      
     printf("thload_stop\n" );
     
-    atomic_store_explicit(&th->keeprunning,0 , memory_order_relaxed);
-    
-    kill(th->pid, SIGINT);
-          
+    if(!th->blocking )
+    {
+        atomic_store_explicit(&th->keeprunning,0 , memory_order_relaxed);
+
+        kill(th->pid, SIGINT);
+    }
+
     if(fork_dup2_exec_result(th->fp, th->pid) != 0) {
             return;
     }

@@ -19,6 +19,8 @@ typedef struct _execload {
   char logfile[MAX_PATH_LENGTH]; //UFS001.txt  
   
   char **argv;
+  
+  bool blocking;
    
   atomic_bool keeprunning; 
   pthread_t threads; 

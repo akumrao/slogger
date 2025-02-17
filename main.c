@@ -100,19 +100,21 @@ int main(int argc, char**argv)
     slog_message(LOG_DEBUG, TAG, "Gear and lanes are configured and validated");
     
     
-//    char* arg_list[] = {
-//        "ls",     /* argv[0], the name of the program.  */
-//        "-l", 
-//        "/",
-//        NULL      /* The argument list must end with a NULL.  */
-//      };
+ 
+
     
-    //exec_top();
+    
+//    char* arg_list1[] = {  "ls",    "-l",  "/",     NULL      };
+//    
+//    Exec thexecList = (Exec){ exec_start, exec_run, exec_run,  "/tmp/", "parameter1.txt", arg_list1, true}; 
+//    thexecList.start(&thexecList); 
+//    thexecList.stop(&thexecList); 
+//    
+    
+        //exec_top();
       
     char* arg_list[] = {  "top",  "-d",   "1",   NULL  };
-    
     Exec thexec = (Exec){ exec_start, exec_run, exec_stop,  "/tmp/", "parameter.txt", arg_list}; 
-    
     thexec.start(&thexec); 
     
     
