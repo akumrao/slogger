@@ -1,0 +1,41 @@
+# Compiler and Flags
+CC = aarch64-linux-android33-clang
+CFLAGS = -Wall -g -static-libstdc++ -Wno-deprecated -Wno-unused-command-line-argument -Wno-writable-strings -Iinc -I../../../common/inc
+
+# Directories
+SRC_DIR = .
+LIB_DIR = ../../../common
+OBJ_DIR = obj
+BIN_DIR = ./bin
+
+# Target Executable
+TARGET = $(BIN_DIR)/test
+
+# Default Rule (Builds the executable)
+all: $(BIN_DIR) $(TARGET)
+
+# Source and Object Files
+SRC := $(wildcard $(SRC_DIR)/*.c)
+LIB_SRC := $(wildcard $(LIB_DIR)/$(SRC_DIR)/gpu_*.c)
+
+OBJ := $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRC))
+LIB_OBJ := $(patsubst $(LIB_DIR)/$(SRC_DIR)/%.c, $(LIB_DIR)/$(OBJ_DIR)/%.o, $(LIB_SRC))
+
+# Dependency Rule for Object Files
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# Dependency Rule for LIB Object Files
+$(LIB_DIR)/$(OBJ_DIR)/%.o: $(LIB_DIR)/$(SRC_DIR)/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# Dependency Rule for Executable
+$(TARGET): $(OBJ) $(LIB_OBJ)
+	$(CC) $(CFLAGS) $(OBJ) $(LIB_OBJ) -o $@ -llog
+
+$(BIN_DIR):
+	@mkdir -p $(OBJ_DIR) $(LIB_DIR)/$(OBJ_DIR) $@
+
+# Clean Rule
+clean:
+	rm -rf $(BIN_DIR) $(OBJ_DIR) $(LIB_DIR)/$(OBJ_DIR)
