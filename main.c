@@ -41,58 +41,13 @@ void intHandler(int sig)
     
     condwait.signal(&condwait);
     
-    printf("intHandler\n" );
-//    
-//    queue.shutdown = 1;
-//    
-//    cancel_my_thread();
-//
-//    pthread_cond_signal(&queue.cond);
-    
-    
-    
-    fflush(stdout);
-  
+
 }
 
 
 
 
-typedef struct _node { 
-   
-  int value; 
-  struct _node *next; 
-   
-  void (*str_func)( struct _node*); 
-     
-} Node ; 
- 
-void str(Node* n){ 
-    while ( n!= NULL ){ 
-        printf("%d -> ", n->value); 
-        n = n->next; 
-    } 
-    printf("NULL\n"); 
-} 
- 
 
-/*
-void* myThreadFun(void* vargp)
-{
-    sleep(1);
-    printf("Printing GeeksQuiz from Thread \n");
-    return NULL;
-}
-
-int main()
-{
-    pthread_t thread_id;
-    printf("Before Thread\n");
-    pthread_create(&thread_id, NULL, myThreadFun, NULL);
-    pthread_join(thread_id, NULL);
-    printf("After Thread\n");
-    exit(0);
-}*/
 
 #define NOOFTHREADLOAD 2
 int main(int argc, char**argv) 
