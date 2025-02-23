@@ -159,7 +159,7 @@ void thload_start(ThLoader* th){
  *          is false.
  */
 
-void thload_run(ThLoader* th){ 
+void thload_run1(ThLoader* th){ 
     
     Condwait condwait = (Condwait){  condwait_int, condwait_wait, condwait_signal, condwait_stop }; 
     
@@ -228,3 +228,52 @@ void thload_stop(ThLoader* th){
     pthread_join(th->threads, NULL);
 } 
 
+/**
+ * Function: void thload_run_cond(ThLoader* th)
+ * Description: Runs a loop that logs messages and waits for a condition 
+ *              to be met, based on the `keeprunning` flag. The loop 
+ *              continues until the flag is set to false.
+ * Parameters:
+ *   - th: ThLoader* - Pointer to a `ThLoader` structure controlling 
+ *     the loop execution.
+ * Returns:
+ *   void - No return value. The function keeps running until `keeprunning`
+ *          is false.
+ */
+
+void thload_run(ThLoader* th)
+{ 
+    
+    Condwait condwait = (Condwait){  condwait_int, condwait_wait, condwait_signal, condwait_stop }; 
+    
+    condwait.init(&condwait);
+    
+    char string[40];
+ 
+    
+    FILE *filems = fopen("/sys/class/thermal/cooling_device2/stats/time_in_state_ms", "r");
+    setvbuf(filems, NULL, _IONBF, 0);
+     
+    
+    int ncount = 0;
+    while (atomic_load_explicit(&th->keeprunning, memory_order_relaxed))
+    {
+        
+        //sprintf(string, "timestamp = %li.%09li sec", condwait.timeout.tv_sec, condwait.timeout.tv_nsec);
+
+        int sz = fread(string, 1, 40 , filems);
+        
+        slog_message(LOG_INFO,  TAG, "%d %s ",ncount++ ,  string );
+       
+       // pushMessage(string , sz );
+        
+        condwait.wait(&condwait, 0, 1);
+        
+        rewind(filems);
+        
+    }
+   
+    fclose(filems);
+    
+    condwait.stop(&condwait);
+} 
