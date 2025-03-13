@@ -26,6 +26,9 @@
 #include "threadload.h"
 #include "spwan.h"
 
+#include "playlinklist.h"
+
+
 #define TAG "GPU : Benchmark"
 
 int console_loglevel = LOG_INFO;          /* Default logging level for console output */
@@ -47,12 +50,37 @@ void intHandler(int sig)
 
 
 
+stPlayList *fileplaylist = NULL;
 
-
-#define NOOFTHREADLOAD 2
+#define NOOFTHREADLOAD 0
 int main(int argc, char**argv) 
 {
-#if 1 
+ #if 0
+    readplaylist(&fileplaylist);
+    
+    displaylist(fileplaylist);
+    
+    
+    addplaylist( &fileplaylist, "arvind\n" );
+    
+    addplaylist( &fileplaylist, "arvind1\n" );
+    
+    addplaylist( &fileplaylist, "arvind2\n" );
+      
+    addplaylist( &fileplaylist, "arvind3\n" );
+    
+    removeplaylist( &fileplaylist, "arvind3\n" );
+    
+    addplaylist( &fileplaylist, "arvind4\n" );
+    
+  
+    saveplaylist(fileplaylist);
+   displaylist(fileplaylist);
+    
+    fflush(stdout);
+#endif
+    
+#if 0
     signal(SIGINT, intHandler); 
     signal(SIGTSTP, intHandler); 
             
