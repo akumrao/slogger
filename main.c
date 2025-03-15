@@ -61,21 +61,21 @@ int main(int argc, char**argv)
     displaylist(fileplaylist);
     
     
-    addplaylist( &fileplaylist, "arvind\n" );
+    addplaylist_front( &fileplaylist, "arvind\n" );
     
-    addplaylist( &fileplaylist, "arvind1\n" );
-    
-    addplaylist( &fileplaylist, "arvind2\n" );
-      
-    addplaylist( &fileplaylist, "arvind3\n" );
-    
-    removeplaylist( &fileplaylist, "arvind3\n" );
-    
-    addplaylist( &fileplaylist, "arvind4\n" );
+//    addplaylist_front( &fileplaylist, "arvind1\n" );
+//    
+//    addplaylist_front( &fileplaylist, "arvind2\n" );
+//      
+//    addplaylist_front( &fileplaylist, "arvind3\n" );
+//    
+//    removeplaylist( &fileplaylist, "arvind3\n" );
+//    
+//    addplaylist_front( &fileplaylist, "arvind4\n" );
     
   
     saveplaylist(fileplaylist);
-   displaylist(fileplaylist);
+    displaylist(fileplaylist);
     
     fflush(stdout);
 #endif
