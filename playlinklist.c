@@ -197,6 +197,7 @@ bool addplaylist_front( stPlayList **filelist, const char *path  )
         while(list != NULL)
         {
            fwrite(list->path, 1, strlen(list->path), file);
+           fputc((int)'\n', file);
            list = list->next;
         }
 
@@ -222,8 +223,11 @@ bool readplaylist( stPlayList **list )
 
         while (!feof(file))
         {
-            fgets(buff, 256, file);
-             addplaylist_last( list , buff);
+            if(fgets(buff, 256, file))
+            {
+                buff[strcspn(buff, "\n")] = '\0';
+                addplaylist_last( list , buff);
+            }
         }
 
         fclose(file);
@@ -251,8 +255,8 @@ const char * extract_file_name(const char *pPath)
         }
     }
     
-    path[strcspn(path, "\n")] = 0;
-   // path[strlen(path) -4 ] = 0;
+    path[strcspn(path, "\n")] =  '\0';
+    path[strlen(path) -4 ] = '\0';
     
     return path;
 }

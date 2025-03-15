@@ -55,23 +55,27 @@ stPlayList *fileplaylist = NULL;
 #define NOOFTHREADLOAD 0
 int main(int argc, char**argv) 
 {
- #if 0
+ #if 1
     readplaylist(&fileplaylist);
     
     displaylist(fileplaylist);
     
     
-    addplaylist_front( &fileplaylist, "arvind\n" );
+    addplaylist_front( &fileplaylist, "arvind" );
     
-//    addplaylist_front( &fileplaylist, "arvind1\n" );
-//    
-//    addplaylist_front( &fileplaylist, "arvind2\n" );
-//      
-//    addplaylist_front( &fileplaylist, "arvind3\n" );
-//    
-//    removeplaylist( &fileplaylist, "arvind3\n" );
-//    
-//    addplaylist_front( &fileplaylist, "arvind4\n" );
+    addplaylist_front( &fileplaylist, "arvind1" );
+    
+    addplaylist_front( &fileplaylist, "arvind2" );
+      
+    addplaylist_front( &fileplaylist, "arvind3" );
+    
+    removeplaylist( &fileplaylist, "arvind3" );
+    
+    addplaylist_front( &fileplaylist, "arvind4" );
+    addplaylist_front( &fileplaylist, "arvind4" );
+    addplaylist_front( &fileplaylist, "arvind4" );
+      removeplaylist( &fileplaylist, "arvind4" );    
+      
     
   
     saveplaylist(fileplaylist);
