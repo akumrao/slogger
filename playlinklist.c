@@ -171,10 +171,10 @@ bool addplaylist_last( stPlayList **filelist, const char *path )
 
 
     stPlayList *l = (stPlayList *)malloc(sizeof(stPlayList));
-    l->path =(char*) malloc(strlen(path));
+    l->path =(char*) malloc(strlen(path)+1);
     strcpy( l->path, path);
     const char *tmp = extract_file_name(path);
-    l->file =(char*) malloc(strlen(tmp));
+    l->file =(char*) malloc(strlen(tmp)+1);
     strcpy( l->file, tmp);
     l->next = NULL;
     l->prv= prv;
@@ -251,10 +251,10 @@ bool addplaylist_front( stPlayList **filelist, const char *path  )
 
 
     stPlayList *l = (stPlayList *)malloc(sizeof(stPlayList));
-    l->path =(char*) malloc(strlen(path));
+    l->path =(char*) malloc(strlen(path)+1);
     strcpy( l->path, path);
     const char *tmp = extract_file_name(path);
-    l->file =(char*) malloc(strlen(tmp));
+    l->file =(char*) malloc(strlen(tmp)+1);
     strcpy( l->file, tmp);
     l->prv =NULL;
 
@@ -340,7 +340,7 @@ bool swapplaylist( stPlayList **filelist, const char *path, bool next ,  stPlayL
     {
         if(!strcmp( list->path, path))
         {
-            return false;
+            return swapplayNode(list, next, selnode );
         }
         
         ++nCount;
