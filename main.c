@@ -51,6 +51,8 @@ void intHandler(int sig)
 
 
 stPlayList *fileplaylist = NULL;
+stPlayList *headoflist = NULL;
+stPlayList *selectedlist = NULL;
 
 #define NOOFTHREADLOAD 0
 int main(int argc, char**argv) 
@@ -58,28 +60,91 @@ int main(int argc, char**argv)
  #if 1
     readplaylist(&fileplaylist);
     
+    selectedlist = fileplaylist;
+    
+    swapplayNode( fileplaylist, true, &selectedlist);
+    
+    printf("\n selected node %s \n", selectedlist->file );
+    
+    displaylist(fileplaylist);
+            
+    swapplayNode( fileplaylist->next, false, &selectedlist);
+    
+    printf("\n selected node %s \n", selectedlist->file ) ;     
+    
     displaylist(fileplaylist);
     
     
-    addplaylist_front( &fileplaylist, "arvind" );
+    removeplayNode( &fileplaylist, fileplaylist, &headoflist);
     
-    addplaylist_front( &fileplaylist, "arvind1" );
+    displaylist(fileplaylist);
     
-    addplaylist_front( &fileplaylist, "arvind2" );
-      
-    addplaylist_front( &fileplaylist, "arvind3" );
     
-    removeplaylist( &fileplaylist, "arvind3" );
+    getPage( fileplaylist , true,  &headoflist);
     
-    addplaylist_front( &fileplaylist, "arvind4" );
-    addplaylist_front( &fileplaylist, "arvind4" );
-    addplaylist_front( &fileplaylist, "arvind4" );
-      removeplaylist( &fileplaylist, "arvind4" );    
-      
+    removeplayNode( &fileplaylist, fileplaylist->next, &headoflist);
+    
+    displayPage(headoflist);
+     
+    getPage( fileplaylist , true,  &headoflist);
+    
+    displayPage(headoflist);
+    
+    getPage( fileplaylist , true,  &headoflist);
+    
+    displayPage(headoflist);
+     
+    getPage( fileplaylist , true,  &headoflist);
+     
+    
+    displayPage(headoflist);
+        
+    //headoflist = NULL;
+    
+    getPage( fileplaylist , false,  &headoflist);
+             
+    displayPage(headoflist);
+    
+    getPage( fileplaylist , false,  &headoflist);
+             
+    displayPage(headoflist);
+    
+    
+    getPage( fileplaylist , false,  &headoflist);
+             
+    displayPage(headoflist);
+    
+    
+    
+    getPage( fileplaylist , false,  &headoflist);
+             
+    displayPage(headoflist);
+    
+    
+    
+//    
+//    addplaylist_front( &fileplaylist, "arvind" );
+//    
+//    addplaylist_front( &fileplaylist, "arvind1" );
+//    
+//    addplaylist_front( &fileplaylist, "arvind2" );
+//      
+//    addplaylist_front( &fileplaylist, "arvind3" );
+//    
+//    removeplaylist( &fileplaylist, "arvind2" );
+//    
+//     saveplaylist(fileplaylist);
+//    displaylist(fileplaylist);
+//    
+//    addplaylist_front( &fileplaylist, "A" );
+//    addplaylist_front( &fileplaylist, "B" );
+//    addplaylist_front( &fileplaylist, "C" );
+//   removeplaylist( &fileplaylist, "D" );    
+//      
     
   
     saveplaylist(fileplaylist);
-    displaylist(fileplaylist);
+   // displaylist(fileplaylist);
     
     fflush(stdout);
 #endif
