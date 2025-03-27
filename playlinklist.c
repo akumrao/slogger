@@ -459,9 +459,9 @@ bool readplaylist( stPlayList **list )
 
 const char * extract_file_name(const char *pPath)
 {
-    char tmp[256];
-    strcpy( tmp,  pPath);
-    char *path = tmp;
+   // char tmp[256];
+   // strcpy( tmp,  pPath);
+    char *path = pPath;
     
     int len = strlen(path);
     //printf("\nlength of %s : %d",path, len);
